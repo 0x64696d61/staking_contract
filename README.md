@@ -22,7 +22,7 @@ npx hardhat claim --address [contract address]
 ```
 
 Staking contract address:
-[0x32771Da5308184b6aDd2C09761E3006Df8cfA815](https://rinkeby.etherscan.io/token/0x32771Da5308184b6aDd2C09761E3006Df8cfA815
+[0x32771Da5308184b6aDd2C09761E3006Df8cfA815](https://rinkeby.etherscan.io/address/0x32771Da5308184b6aDd2C09761E3006Df8cfA815
 )
 
 Reward tokens address:

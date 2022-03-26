@@ -47,7 +47,7 @@ describe("ERC20 token", function () {
 
             expect(await stakingToken.balanceOf(stakingHouse.address)).eq(value)
         })
-        it("Should be return reward if before stake new tokens", async function () {
+        it("Should be return reward before new stake tokens", async function () {
             await stakingHouse.connect(acc1).stake(value)
             await network.provider.send("evm_increaseTime", [stakingRewardTime * 60])
             await stakingToken.connect(acc1).approve(stakingHouse.address, value)

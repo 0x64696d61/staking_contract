@@ -47,6 +47,15 @@ describe("ERC20 token", function () {
 
             expect(await stakingToken.balanceOf(stakingHouse.address)).eq(value)
         })
+        it("Should be return reward if before stake new tokens", async function () {
+            await stakingHouse.connect(acc1).stake(value)
+            await network.provider.send("evm_increaseTime", [stakingRewardTime * 60])
+            await stakingToken.connect(acc1).approve(stakingHouse.address, value)
+            await stakingHouse.connect(acc1).stake(value)
+
+            expect(await rewardToken.balanceOf(acc1.address)).eq(value * (staking_percent * 0.01))
+        })
+
 
         it("Should be reverted if amount less 100", async function () {
             await expect(stakingHouse.connect(acc1).stake(90)).to.be.revertedWith("amount will be more")

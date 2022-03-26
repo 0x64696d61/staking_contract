@@ -41,13 +41,15 @@ contract StakingHouse is Ownable {
     function stake(uint256 amount) external {
         require(amount > 100, "amount will be more");
 
+        if (reward() > 0)
+            claim();
         _stakingToken.transferFrom(msg.sender, address(this), amount);
         _users[msg.sender].stakingBalance += amount;
         _totalStakingTokens += amount;
         _users[msg.sender].startTime = block.timestamp;
     }
 
-    function claim() public userExist {
+    function claim() public userExist checkTime(stakingRewardTime) {
         _rewardToken.transfer(msg.sender, reward());
     }
 
@@ -57,7 +59,7 @@ contract StakingHouse is Ownable {
         _users[msg.sender].stakingBalance = 0;
     }
 
-    function reward() private view checkTime(stakingRewardTime) returns (uint256) {
+    function reward() private view returns (uint256) {
         uint different = block.timestamp.sub(_users[msg.sender].startTime).div(stakingRewardTime);
         uint rate = _users[msg.sender].stakingBalance.div(100).mul(stakingPercent);
         uint _reward = rate.mul(different);

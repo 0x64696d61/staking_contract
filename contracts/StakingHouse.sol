@@ -13,7 +13,6 @@ contract StakingHouse is Ownable {
     uint8 public stakingPercent = 20;
     uint public unstakeFrozenTime = 20 minutes;
     uint public stakingRewardTime = 10 minutes;
-    uint public _totalStakingTokens;
 
 
     struct User
@@ -45,7 +44,6 @@ contract StakingHouse is Ownable {
             claim();
         _stakingToken.transferFrom(msg.sender, address(this), amount);
         _users[msg.sender].stakingBalance += amount;
-        _totalStakingTokens += amount;
         _users[msg.sender].startTime = block.timestamp;
     }
 

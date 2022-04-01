@@ -3,7 +3,7 @@ My Simple Staking Smart Contract
 
 ###Deploy to rinkeby network:
 ```
-npx hardhat run --network rinkeby scripts/deploy.ts
+npx hardhat run --network rinkeby scripts/deployMyTokenErc1155.ts
 ```
 ###HardHat tasks:
 stake tokens

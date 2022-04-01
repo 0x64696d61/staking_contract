@@ -61,6 +61,9 @@ describe("ERC20 token", function () {
             await expect(stakingHouse.connect(acc1).stake(90)).to.be.revertedWith("amount will be more")
         })
 
+        it("Should be Event about staking", async function () {
+            await expect(stakingHouse.connect(acc1).stake(value)).to.be.to.emit(stakingHouse, "Stake").withArgs(acc1.address, value)
+        })
     })
 
     describe("unstake method", function () {
@@ -88,6 +91,12 @@ describe("ERC20 token", function () {
         })
         it("Should be reverted if user don't exist", async function () {
             await expect(stakingHouse.connect(acc2).claim()).to.be.revertedWith("User not exist")
+        })
+        it("Should be Event about claim", async function () {
+            await stakingHouse.connect(acc1).stake(value)
+            await network.provider.send("evm_increaseTime", [unstakeFrozenTime * 60])
+
+            await expect(stakingHouse.connect(acc1).claim()).to.be.to.emit(stakingHouse, "Reward").withArgs(acc1.address, value * 0.4)
         })
     })
     it("Should be possible change percent of reward", async function () {

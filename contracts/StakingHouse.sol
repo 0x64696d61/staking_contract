@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract StakingHouse is Ownable {
-    using SafeMath for uint;
     IERC20 private _stakingToken;
     IERC20 private _rewardToken;
 
@@ -14,11 +12,14 @@ contract StakingHouse is Ownable {
     uint public unstakeFrozenTime = 20 minutes;
     uint public stakingRewardTime = 10 minutes;
 
+    event Stake(address indexed account, uint256 amount);
+    event UnStake(address indexed account, uint256 amount);
+    event Reward(address indexed account, uint256 amount);
 
     struct User
     {
         uint startTime;
-        uint256 stakingBalance;
+        uint stakingBalance;
     }
 
     constructor(address stakingTokenAddress, address rewardTokenAddress) {
@@ -42,26 +43,30 @@ contract StakingHouse is Ownable {
 
         if (reward() > 0)
             claim();
-        _stakingToken.transferFrom(msg.sender, address(this), amount);
         _users[msg.sender].stakingBalance += amount;
+        _stakingToken.transferFrom(msg.sender, address(this), amount);
         _users[msg.sender].startTime = block.timestamp;
+        emit Stake(msg.sender, amount);
     }
 
     function claim() public userExist checkTime(stakingRewardTime) {
-        _rewardToken.transfer(msg.sender, reward());
+        uint amount = reward();
+        _rewardToken.transfer(msg.sender, amount);
         _users[msg.sender].startTime = block.timestamp;
+        emit Reward(msg.sender, amount);
     }
 
     function unstake() external userExist checkTime(unstakeFrozenTime) {
         claim();
         _stakingToken.transfer(msg.sender, _users[msg.sender].stakingBalance);
         _users[msg.sender].stakingBalance = 0;
+      //  emit UnStake(msg.sender, _users[msg.sender].stakingBalance);
     }
 
     function reward() private view returns (uint) {
-        uint different = block.timestamp.sub(_users[msg.sender].startTime).div(stakingRewardTime);
-        uint rate = _users[msg.sender].stakingBalance.div(100).mul(stakingPercent);
-        uint _reward = rate.mul(different);
+        uint different = (block.timestamp - _users[msg.sender].startTime) / stakingRewardTime;
+        uint rate = _users[msg.sender].stakingBalance / 100 * stakingPercent;
+        uint _reward = rate * different;
         return _reward;
     }
 
